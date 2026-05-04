@@ -1,4 +1,23 @@
-*.class
+.DS_Store
+
+# Logs and local environment
 *.log
-*.db
-/out/
+.env
+.env.*
+!.env.example
+
+# Frontend
+web/node_modules/
+web/dist/
+web/.vite/
+web/coverage/
+
+# Backend
+backend/aura_server
+backend/*.o
+backend/*.db
+backend/*.sqlite
+
+# Legacy Java/build outputs
+*.class
+out/
