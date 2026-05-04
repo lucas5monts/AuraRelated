@@ -1,18 +1,21 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
+  Activity,
   Brain,
   BriefcaseBusiness,
   Check,
-  Flame,
+  ChevronRight,
   HeartHandshake,
   RefreshCw,
   ShieldCheck,
   Sparkles,
-  Star,
   Sun,
+  Target,
+  Trophy,
   Dumbbell,
 } from 'lucide-react';
+import heroImage from './assets/aura-hero.png';
 import './styles.css';
 
 const STORAGE_KEY = 'aura:v1:daily-checkin';
@@ -22,7 +25,7 @@ const AURA_AREAS = [
     id: 'mind',
     name: 'Mind',
     icon: Brain,
-    color: '#4f8cff',
+    color: '#4d7cff',
     prompt: 'Mental health, clarity, emotional control, and rest.',
     actions: ['10-minute reset walk', 'Write one honest thought', 'No-phone wind down'],
   },
@@ -30,7 +33,7 @@ const AURA_AREAS = [
     id: 'body',
     name: 'Body',
     icon: Dumbbell,
-    color: '#22a06b',
+    color: '#18a86b',
     prompt: 'Movement, nutrition, sleep, and physical confidence.',
     actions: ['Move for 20 minutes', 'Drink two full waters', 'Protein with next meal'],
   },
@@ -38,7 +41,7 @@ const AURA_AREAS = [
     id: 'work',
     name: 'Work/School',
     icon: BriefcaseBusiness,
-    color: '#8a63d2',
+    color: '#8d5cf6',
     prompt: 'Focus, discipline, learning, and momentum.',
     actions: ['Finish one priority block', 'Clean your task list', 'Study for 25 minutes'],
   },
@@ -46,7 +49,7 @@ const AURA_AREAS = [
     id: 'social',
     name: 'Social',
     icon: HeartHandshake,
-    color: '#e86f51',
+    color: '#ff6b4a',
     prompt: 'Friendships, family, communication, and presence.',
     actions: ['Text someone back', 'Give one real compliment', 'Make one plan'],
   },
@@ -54,7 +57,7 @@ const AURA_AREAS = [
     id: 'purpose',
     name: 'Purpose',
     icon: Sun,
-    color: '#d99221',
+    color: '#f2a51a',
     prompt: 'Meaning, direction, values, and future self.',
     actions: ['Write tomorrow’s main aim', 'Do one thing your future self wants', 'Read 5 pages'],
   },
@@ -62,7 +65,7 @@ const AURA_AREAS = [
     id: 'style',
     name: 'Style/Confidence',
     icon: ShieldCheck,
-    color: '#0f9aa7',
+    color: '#00a9b7',
     prompt: 'Self-respect, grooming, style, and how you carry yourself.',
     actions: ['Reset your room fit', 'Clean up one personal detail', 'Stand tall for the day'],
   },
@@ -115,6 +118,7 @@ function App() {
     return total / AURA_AREAS.length;
   }, [state.ratings]);
   const auraScore = Math.round(ratingAverage * 8 + (completedActions / totalActions) * 20);
+  const progressPercent = Math.round((completedActions / totalActions) * 100);
   const strongestArea = AURA_AREAS.reduce((best, area) =>
     state.ratings[area.id] > state.ratings[best.id] ? area : best,
   );
@@ -143,41 +147,62 @@ function App() {
 
   return (
     <main className="app-shell">
-      <section className="topbar" aria-label="Aura overview">
-        <div>
-          <p className="eyebrow">Aura Life OS</p>
-          <h1>Raise every part of your life.</h1>
+      <section className="hero" style={{ '--hero-image': `url(${heroImage})` }} aria-label="Aura overview">
+        <div className="hero-overlay">
+          <div className="brand-mark">
+            <Sparkles size={18} />
+            <span>Aura</span>
+          </div>
+          <h1>Refine the life behind your aura.</h1>
+          <a className="primary-action" href="#daily-check-in">
+            Begin today
+          </a>
         </div>
-        <button className="icon-button" type="button" onClick={resetToday} aria-label="Reset today's check-in">
-          <RefreshCw size={18} />
+      </section>
+
+      <section className="dashboard-overview" aria-label="Today's aura dashboard">
+        <div className="overview-copy">
+          <p className="eyebrow">Today</p>
+          <h2>A quiet command center for your next level.</h2>
+          <p className="muted">
+            Bring your mind, body, ambition, relationships, purpose, and confidence into one daily rhythm.
+          </p>
+        </div>
+        <aside className="score-console">
+          <div className="console-header">
+            <span>Aura score</span>
+            <strong>{auraScore}/100</strong>
+          </div>
+          <div
+            className="score-ring"
+            style={{ '--score-deg': `${auraScore * 3.6}deg` }}
+            aria-label={`Aura score ${auraScore}`}
+          >
+            <span>{auraScore}</span>
+            <small>/100</small>
+          </div>
+          <div className="momentum-bar" aria-label={`${progressPercent}% of actions completed`}>
+            <span style={{ width: `${progressPercent}%` }} />
+          </div>
+          <p>{completedActions} of {totalActions} actions complete today</p>
+        </aside>
+        <div className="stat-grid">
+          <Metric icon={Activity} label="Action flow" value={`${completedActions}/${totalActions}`} />
+          <Metric icon={Trophy} label="Strongest signal" value={strongestArea.name} />
+          <Metric icon={Target} label="Next focus" value={focusArea.name} />
+        </div>
+        <button className="reset-action" type="button" onClick={resetToday}>
+          <RefreshCw size={16} />
+          Reset today
         </button>
       </section>
 
-      <section className="hero-panel">
-        <div className="score-block">
-          <div className="score-ring" aria-label={`Aura score ${auraScore}`}>
-            <span>{auraScore}</span>
-          </div>
-          <div>
-            <p className="eyebrow">Today’s aura</p>
-            <h2>{scoreLabel(auraScore)}</h2>
-            <p className="muted">Built from your area ratings and completed actions.</p>
-          </div>
-        </div>
-
-        <div className="stat-grid">
-          <Metric icon={Check} label="Actions" value={`${completedActions}/${totalActions}`} />
-          <Metric icon={Star} label="Strongest" value={strongestArea.name} />
-          <Metric icon={Flame} label="Focus" value={focusArea.name} />
-        </div>
-      </section>
-
-      <section className="section-heading">
+      <section className="section-heading" id="daily-check-in">
         <div>
           <p className="eyebrow">Daily check-in</p>
-          <h2>Balance the six areas</h2>
+          <h2>Dial in the six signals.</h2>
         </div>
-        <p className="muted">Rate honestly, then pick actions small enough to actually do today.</p>
+        <p className="muted">Rate honestly, then stack actions that make the day feel earned.</p>
       </section>
 
       <section className="area-grid">
@@ -196,7 +221,7 @@ function App() {
       <section className="reflection-panel">
         <div>
           <p className="eyebrow">Reflection</p>
-          <h2>One line for the day</h2>
+          <h2>Lock one insight</h2>
         </div>
         <textarea
           value={state.reflection}
@@ -212,7 +237,9 @@ function App() {
 function Metric({ icon: Icon, label, value }) {
   return (
     <div className="metric">
-      <Icon size={18} />
+      <div className="metric-icon">
+        <Icon size={18} />
+      </div>
       <span>{label}</span>
       <strong>{value}</strong>
     </div>
@@ -221,6 +248,7 @@ function Metric({ icon: Icon, label, value }) {
 
 function AreaCard({ area, rating, completed, onRating, onAction }) {
   const Icon = area.icon;
+  const doneCount = area.actions.filter((_, index) => completed[`${area.id}:${index}`]).length;
   return (
     <article className="area-card" style={{ '--area-color': area.color }}>
       <header>
@@ -231,7 +259,12 @@ function AreaCard({ area, rating, completed, onRating, onAction }) {
           <h3>{area.name}</h3>
           <p>{area.prompt}</p>
         </div>
+        <div className="area-score">{rating}</div>
       </header>
+
+      <div className="area-progress" aria-label={`${area.name} level ${rating} out of 10`}>
+        <span style={{ width: `${rating * 10}%` }} />
+      </div>
 
       <label className="rating-row">
         <span>Current level</span>
@@ -247,6 +280,10 @@ function AreaCard({ area, rating, completed, onRating, onAction }) {
       </label>
 
       <div className="action-list">
+        <div className="action-meta">
+          <span>Today’s moves</span>
+          <strong>{doneCount}/{area.actions.length}</strong>
+        </div>
         {area.actions.map((action, index) => {
           const key = `${area.id}:${index}`;
           return (
@@ -258,6 +295,7 @@ function AreaCard({ area, rating, completed, onRating, onAction }) {
             >
               <span>{completed[key] ? <Check size={15} /> : <Sparkles size={15} />}</span>
               {action}
+              <ChevronRight className="action-arrow" size={15} />
             </button>
           );
         })}
