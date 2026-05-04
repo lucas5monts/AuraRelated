@@ -596,6 +596,92 @@ h3 {
   }
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #f5f7fb;
+    background: #0d1017;
+    --surface: rgba(24, 28, 37, 0.82);
+    --surface-strong: rgba(28, 32, 42, 0.94);
+    --line: rgba(255, 255, 255, 0.14);
+    --line-strong: rgba(255, 255, 255, 0.22);
+    --text: #f5f7fb;
+    --muted: #b9c0cc;
+    --soft: #8f98a8;
+    --blue: #5aa7ff;
+    --shadow: 0 22px 70px rgba(0, 0, 0, 0.42);
+    --shadow-soft: 0 16px 46px rgba(0, 0, 0, 0.34);
+  }
+
+  body {
+    background:
+      radial-gradient(circle at 22% 0%, rgba(90, 167, 255, 0.16), transparent 30rem),
+      radial-gradient(circle at 82% 18%, rgba(52, 199, 89, 0.08), transparent 24rem),
+      linear-gradient(180deg, #0a0d13 0%, #111620 48%, #0d1017 100%);
+  }
+
+  .hero {
+    border-color: rgba(255, 255, 255, 0.18);
+    background:
+      linear-gradient(90deg, rgba(11, 14, 20, 0.92), rgba(14, 18, 27, 0.78) 48%, rgba(14, 18, 27, 0.24)),
+      var(--hero-image) 74% center / cover no-repeat;
+  }
+
+  .brand-mark,
+  .reset-action {
+    border-color: rgba(255, 255, 255, 0.18);
+    background: rgba(24, 28, 37, 0.72);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+  }
+
+  .score-console,
+  .metric,
+  .area-card,
+  .reflection-panel {
+    border-color: var(--line);
+    box-shadow:
+      var(--shadow-soft),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  .score-ring {
+    background:
+      radial-gradient(circle, #151a23 54%, transparent 55%),
+      conic-gradient(var(--blue) 0deg, #44d17a var(--score-deg), rgba(255, 255, 255, 0.12) var(--score-deg));
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+      0 16px 44px rgba(0, 0, 0, 0.38);
+  }
+
+  .momentum-bar,
+  .area-progress,
+  .rating-row input::-webkit-slider-runnable-track {
+    background: rgba(255, 255, 255, 0.13);
+  }
+
+  .action {
+    border-color: rgba(255, 255, 255, 0.13);
+    background: rgba(34, 39, 50, 0.82);
+  }
+
+  .action:hover,
+  .reset-action:hover {
+    background: rgba(43, 49, 62, 0.96);
+  }
+
+  .action.done {
+    background: color-mix(in srgb, var(--area-color), rgba(34, 39, 50, 0.9) 82%);
+  }
+
+  .reflection-panel textarea {
+    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(14, 18, 26, 0.84);
+  }
+
+  .rating-row input::-webkit-slider-thumb {
+    border-color: #151a23;
+  }
+}
+
 @media (max-width: 980px) {
   .hero,
   .dashboard-overview,
@@ -682,5 +768,21 @@ h3 {
 
   .reflection-panel {
     padding: 18px;
+  }
+}
+
+@media (prefers-color-scheme: dark) and (max-width: 980px) {
+  .hero {
+    background:
+      linear-gradient(90deg, rgba(11, 14, 20, 0.94), rgba(14, 18, 27, 0.82) 55%, rgba(14, 18, 27, 0.42)),
+      var(--hero-image) 72% center / cover no-repeat;
+  }
+}
+
+@media (prefers-color-scheme: dark) and (max-width: 680px) {
+  .hero {
+    background:
+      linear-gradient(180deg, rgba(11, 14, 20, 0.94), rgba(14, 18, 27, 0.84) 58%, rgba(14, 18, 27, 0.46)),
+      var(--hero-image) 62% center / cover no-repeat;
   }
 }
