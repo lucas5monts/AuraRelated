@@ -9,6 +9,7 @@
 #include <unistd.h>
 
 #define AURA_PORT 8080
+#define AURA_HOST "127.0.0.1"
 #define REQUEST_SIZE 4096
 
 static volatile sig_atomic_t running = 1;
@@ -37,9 +38,15 @@ static void send_response(int client_fd, const char *status, const char *content
         body
     );
 
-    if (response_length > 0) {
-        send(client_fd, response, (size_t)response_length, 0);
+    if (response_length <= 0) {
+        return;
     }
+
+    size_t to_send = (size_t)response_length;
+    if (to_send >= sizeof(response)) {
+        to_send = sizeof(response) - 1;
+    }
+    send(client_fd, response, to_send, 0);
 }
 
 static void route_request(int client_fd, const char *request) {
@@ -88,7 +95,11 @@ static int create_server_socket(void) {
     struct sockaddr_in address;
     memset(&address, 0, sizeof(address));
     address.sin_family = AF_INET;
-    address.sin_addr.s_addr = htonl(INADDR_ANY);
+    if (inet_pton(AF_INET, AURA_HOST, &address.sin_addr) != 1) {
+        fprintf(stderr, "Invalid bind host: %s\n", AURA_HOST);
+        close(server_fd);
+        return -1;
+    }
     address.sin_port = htons(AURA_PORT);
 
     if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
@@ -109,13 +120,14 @@ static int create_server_socket(void) {
 int main(void) {
     signal(SIGINT, handle_signal);
     signal(SIGTERM, handle_signal);
+    signal(SIGPIPE, SIG_IGN);
 
     int server_fd = create_server_socket();
     if (server_fd < 0) {
         return EXIT_FAILURE;
     }
 
-    printf("Aura backend listening on http://localhost:%d\n", AURA_PORT);
+    printf("Aura backend listening on http://%s:%d\n", AURA_HOST, AURA_PORT);
     printf("Try GET /health or GET /version\n");
 
     while (running) {
